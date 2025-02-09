@@ -14,8 +14,8 @@ def load_data():
 df = load_data()
 
 with st.sidebar:
-    st.image("images/unikom.png", width=150)
-    st.image("images/kelompok6.png", width=450)
+    st.image("unikom.png", width=150)
+    st.image("kelompok6.png", width=450)
     st.markdown("## Filter Data")  
     regions = df["Region"].unique()
     selected_regions = st.multiselect("Pilih Region", regions, default=regions)
