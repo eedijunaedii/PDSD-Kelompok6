@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 import os
 
 st.set_page_config(layout="wide", page_title="Superstore Dashboard", page_icon="📊")
@@ -35,25 +35,50 @@ col1, col2 = st.columns(2)
 col1.metric(label="Total Sales", value=f"${total_sales:,.2f}")
 col2.metric(label="Total Profit", value=f"${total_profit:,.2f}")
 
+# Visualisasi Total Penjualan berdasarkan Negara
 st.subheader("Total Penjualan berdasarkan Negara")
 sales_by_state = filtered_df.groupby("State")["Sales"].sum().reset_index()
-fig_sales = px.bar(sales_by_state, x="State", y="Sales", title="Total Penjualan per Negara", color="Sales", color_continuous_scale="Blues")
-st.plotly_chart(fig_sales, use_container_width=True)
 
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.bar(sales_by_state["State"], sales_by_state["Sales"], color="blue")
+ax.set_title("Total Penjualan per Negara")
+ax.set_xlabel("State")
+ax.set_ylabel("Sales")
+plt.xticks(rotation=90)
+st.pyplot(fig)
+
+# Visualisasi Profit vs Discount
 st.subheader("Profit vs Discount")
-fig_profit_discount = px.scatter(filtered_df, x="Discount", y="Profit", color="Category", size="Sales", title="Profit vs Discount", hover_data=["State"])
-st.plotly_chart(fig_profit_discount, use_container_width=True)
+fig, ax = plt.subplots(figsize=(10, 6))
+scatter = ax.scatter(filtered_df["Discount"], filtered_df["Profit"], c=filtered_df["Sales"], cmap="viridis")
+ax.set_title("Profit vs Discount")
+ax.set_xlabel("Discount")
+ax.set_ylabel("Profit")
+plt.colorbar(scatter, label="Sales")
+st.pyplot(fig)
 
+# Visualisasi Distribusi Penjualan per Kategori Produk
 st.subheader("Distribusi Penjualan per Kategori Produk")
 sales_by_category = filtered_df.groupby("Category")["Sales"].sum().reset_index()
-fig_pie = px.pie(sales_by_category, values="Sales", names="Category", title="Distribusi Penjualan per Kategori", hole=0.3)
-st.plotly_chart(fig_pie, use_container_width=True)
 
+fig, ax = plt.subplots(figsize=(8, 8))
+ax.pie(sales_by_category["Sales"], labels=sales_by_category["Category"], autopct="%1.1f%%", startangle=90)
+ax.set_title("Distribusi Penjualan per Kategori")
+st.pyplot(fig)
+
+# Visualisasi Tren Penjualan Bulanan
 st.subheader("Tren Penjualan Bulanan")
 sales_trend = filtered_df.groupby("Month")["Sales"].sum().reset_index()
-fig_trend = px.line(sales_trend, x="Month", y="Sales", title="Tren Penjualan Bulanan", markers=True)
-st.plotly_chart(fig_trend, use_container_width=True)
 
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(sales_trend["Month"], sales_trend["Sales"], marker="o", linestyle="-", color="green")
+ax.set_title("Tren Penjualan Bulanan")
+ax.set_xlabel("Month")
+ax.set_ylabel("Sales")
+plt.xticks(rotation=90)
+st.pyplot(fig)
+
+# Tampilkan data sample
 st.subheader("📊 Data Sample")
 st.dataframe(filtered_df.head(10))
 
